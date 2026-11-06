@@ -1,0 +1,35 @@
+<h2>{{ product.title }} - {{ product.id }}</h2>
+
+{{ product.featured_image | image_url: width: 200, height:200 | image_tag: alt: product.title }}
+
+<p>{{ product.price | money }}</p>
+
+{% content_for 'blocks' %}
+
+{% schema %}
+{
+  "name": "Infocard",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+  {
+    "type": "text",
+    "id": "title",
+    "label": "Title"
+  },
+  {
+    "type": "text",
+    "id": "link",
+    "label": "Link"
+  },  
+  {
+  "type": "image_picker",
+  "id": "image",
+  "label": "Image"
+  }
+],
+"presets":[
+  {
+    "name": "Infocard"
+  }
+]}
+{% endschema %}

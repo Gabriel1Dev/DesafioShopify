@@ -1,0 +1,180 @@
+{%- liquid
+    assign vendedor = metaobjects.store_vendor.values
+%}
+
+<div class="ec-vendors" style="--cols-desktop: {{ section.settings.columns_desktop }};
+      --cols-mobile: {{ section.settings.columns_mobile }};
+       --card-padding: {{ section.settings.card_padding }}px;
+       --border-color: {{ section.settings.border_color }};
+       --card-bg: {{ section.settings.card_background }};">
+
+     <h2 class="ec-vendors__title">{{ section.settings.title }}</h2>
+     <p class="ec-vendors__subtitle">{{ section.settings.subtitle }}</p>
+
+    <ul class="ec-vendors__grid">
+  {% for vendedor in metaobjects.store_vendor.values %}
+    <li class="ec-vendors__card">
+      <div class="ec-vendors__header">
+        {% if vendedor.foto_vendedor.value %}
+          {{ vendedor.foto_vendedor.value | image_url: width: 96 | image_tag: class: 'ec-vendors__avatar', width: 48, height: 48, loading: 'lazy', alt: '' }}
+        {% endif %}
+
+        <div class="ec-vendors__info">
+          <h3 class="ec-vendors__name">{{ vendedor.nome_vendedor.value | escape }}</h3>
+          <p class="ec-vendors__role">{{ vendedor.cargo_vendedor.value | escape }}</p>
+        </div>
+
+        {% if vendedor.nivel_vendedor.value != blank %}
+          {% assign badge_file = '' | append: vendedor.nivel_vendedor.value | handleize | append: '.svg' %}
+          <img class="ec-vendors__badge"
+               src="{{ badge_file | asset_url }}"
+               alt="{{vendedor.nivel_vendedor.value | escape }}"
+               width="24" height="24" loading="lazy">
+        {% endif %}
+            </div>
+
+        {% if vendedor.produtos_vendedor.value.size > 0 %}
+            <div class="ec-vendors__products">
+                <p class="ec-vendors__products-label">Produtos vendidos</p>
+                <div class="ec-vendors__products-icons">
+                {% for produto in vendedor.produtos_vendedor.value limit: 7 %}
+                    <img src="{{ 'camisa.svg' | asset_url }}" width="24" height="19" loading="lazy">
+                {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+{% stylesheet %}
+  .ec-vendors { padding: 40px 16px; max-width: 1200px; margin: 0 auto; }
+  .ec-vendors__title,
+  .ec-vendors__subtitle { text-align: center; margin: 0 0 8px; }
+
+  .ec-vendors__grid {
+    list-style: none; margin: 32px 0 0; padding: 0;
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(var(--cols-mobile), minmax(0, 1fr));
+  }
+  @media (min-width: 750px) {
+    .ec-vendors__grid { grid-template-columns: repeat(var(--cols-desktop), minmax(0, 1fr)); }
+  }
+
+  .ec-vendors__card {
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    padding: var(--card-padding);
+    border-radius: 12px;
+  }
+
+  .ec-vendors__header { display: flex; align-items: center; gap: 12px; }
+  .ec-vendors__avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+  .ec-vendors__info { flex: 1; min-width: 0; }
+  .ec-vendors__name { margin: 0; font-size: 14px; font-weight: 700; }
+  .ec-vendors__role { margin: 0; font-size: 13px; color: #666; }
+  .ec-vendors__badge { width: 24px; height: 24px; flex-shrink: 0; }
+
+  .ec-vendors__products { margin-top: 24px; }
+
+.ec-vendors__products-label {
+  margin: 0 0 8px;
+  font-size: 10px;
+  color: #666;
+}
+
+.ec-vendors__products-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ec-vendors__products-list img {
+  display: block;
+  width: 24px;
+  height: auto;
+}
+{% endstylesheet %}
+{% schema %}
+{
+  "name": "Vendedores",
+  "tag": "section",
+  "class": "ec-vendors-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Conteúdo"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título da seção",
+      "default": "Desafio Shopify"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtítulo da seção",
+      "default": "Seção para mostrar vendedores disponíveis de uma loja"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Itens por linha (desktop)",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Itens por linha (mobile)",
+      "default": "1",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Espaçamento interno do card",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Cor da borda",
+      "default": "#F5D04C"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Cor de fundo do card",
+      "default": "#FFFCF2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vendedores"
+    }
+  ]
+}
+{% endschema %}
